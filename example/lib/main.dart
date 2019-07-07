@@ -47,26 +47,45 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Center(
-          child: AndroidView(viewType: 'plugins.nightfarmer.top/myview',
-            creationParams: {
-              "myContent": "通过参数传入的文本内容",
-            },
-            creationParamsCodec: const StandardMessageCodec(),
-            onPlatformViewCreated: onMyViewCreated,) /*Text('Running on: $_platformVersion\n')*/,
+        body: Stack(
+          children: <Widget>[
+            AndroidView(
+              viewType: 'plugins.nightfarmer.top/myview',
+              creationParams: {
+                "myContent": "通过参数传入的文本内容",
+              },
+              creationParamsCodec: const StandardMessageCodec(),
+              onPlatformViewCreated: onMyViewCreated,
+            ),
+            RaisedButton(
+              child: Text("点击"),
+              onPressed: myPross,
+            ),
+          ],
         ),
       ),
     );
   }
+
   MethodChannel _channel;
 
   void onMyViewCreated(int id) {
     _channel = new MethodChannel('plugins.nightfarmer.top/myview_$id');
-    setMyViewText();
+    setMyViewText("我来了");
   }
 
   Future<void> setMyViewText(String text) async {
     assert(text != null);
-    return _channel.invokeMethod('setText', text);
+    return _channel.invokeMethod('loadDetailSuccess', text);
+  }
+
+  void myPross() {
+    setState(() {
+      updateMyView();
+    });
+  }
+
+  Future<void> updateMyView() async {
+    return _channel.invokeMethod('updatePoint', "");
   }
 }
