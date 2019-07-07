@@ -1,5 +1,4 @@
-/*
-package com.xzwyx.flutter_mpandroid_chart;
+package com.xzwyx.flutter_mpandroid_chart_example;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -15,6 +14,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ViewPortHandler;
+import com.xzwyx.flutter_mpandroid_chart_example.R;
 
 import java.util.ArrayList;
 
@@ -28,12 +28,12 @@ public class MutlLineChartManager {
         return new MutlLineChartManager();
     }
 
-    */
-/**
+    /**
      * @param context 上下文
      * @param yValue  折线在y轴的值
      * @Description:创建两条折线
-     *//*
+     */
+
 
     public void initSingleLineChart(Context context,
                                     final ArrayList<Entry> yValue, String lineName, int color) {
@@ -52,14 +52,13 @@ public class MutlLineChartManager {
         dataSet.setValueTextSize(14);
         dataSet.setCircleRadius(1);
 //        dataSet.setValueTextColor(Color.rgb(94, 170, 225));
-       */
-/* dataSet.setValueFormatter(new ValueFormatter() {
+        dataSet.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float v, Entry entry, int i, ViewPortHandler viewPortHandler) {
 
                 return String.valueOf(v);
             }
-        });*//*
+        });
 
         int[] mColor = new int[]{
                 color,
@@ -84,11 +83,10 @@ public class MutlLineChartManager {
         } else {
             set.clear();
         }
-        */
-/*if (set instanceof LineDataSet) {
+        if (set instanceof LineDataSet) {
             ((LineDataSet) set).setCircleColor(color);
             ((LineDataSet) set).setHighLightColor(color);
-        }*//*
+        }
 
 
         set.addEntry(yValue);
@@ -117,21 +115,18 @@ public class MutlLineChartManager {
         if (set == null) {
             set = createSet(label, color);
 
-        } */
-/*else {
+        } else {
             set.clear();
-        }*//*
+        }
 
-        */
-/*if (set instanceof LineDataSet) {
+        if (set instanceof LineDataSet) {
             ((LineDataSet) set).setCircleColor(color);
             ((LineDataSet) set).setHighLightColor(color);
-        }*//*
+        }
 
-       */
-/* if (data.contains(set)) {
+        if (data.contains(set)) {
             data.removeDataSet(set);
-        }*//*
+        }
 
         ((LineDataSet) set).setValues(yValue);
         data.addDataSet(set);
@@ -200,23 +195,20 @@ public class MutlLineChartManager {
         mLineChart.invalidate();
     }
 
-    */
-/**
+    /**
      * @param context
      * @param mLineChart
      * @Description:初始化图表的样式
-     *//*
+     */
 
-    private void initDataStyle(Context context, LineChart mLineChart, final ArrayList<String> xValues ) {
+    private void initDataStyle(Context context, LineChart mLineChart, final ArrayList<String> xValues) {
         mLineChart.setDescription(null);
 
         // 是否在折线图上添加边框
         mLineChart.setDrawBorders(false);
 
-       */
-/* // 如果没有数据的时候，会显示这个，类似listview的emtpyview
-        mLineChart
-                .set("还没有数据");*//*
+        // 如果没有数据的时候，会显示这个，类似listview的emtpyview
+//        mLineChart.("还没有数据");
 
 
         // 是否绘制背景颜色。
@@ -234,7 +226,6 @@ public class MutlLineChartManager {
         mLineChart.setScaleEnabled(false);
         mLineChart.setBackgroundColor(Color.WHITE);
         mLineChart.animateX(2000);  // 沿x轴动画，时间2000毫秒。
-
 
 
         Legend mLegend = mLineChart.getLegend();
@@ -302,4 +293,3 @@ public class MutlLineChartManager {
 
 
 }
-*/
