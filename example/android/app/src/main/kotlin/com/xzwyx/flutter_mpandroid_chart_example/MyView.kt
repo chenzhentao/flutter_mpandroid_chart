@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
@@ -15,7 +16,7 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.platform.PlatformView
-import java.util.ArrayList
+import java.util.*
 
 val classLineName: String = "classLine"
 val classPointName: String = "classPoint"
@@ -24,31 +25,39 @@ val gradePointName: String = "gradePoint"
 val studentLineName: String = "studentLine"
 val studentPointName: String = "studentPoint"
 val dataTemp = "{\"status\":\"1\",\"msg\":\"操作成功！\"," +
-        "\"returnValue\":{\"oneStudentList\":[{\"avgScore\":0.0,\"id\":56," +
-        "\"examName\":\"期中考试成绩（上学期）\"},{\"avgScore\":0.0,\"id\":55," +
-        "\"examName\":\"市级联合考试成绩\"},{\"avgScore\":0.0,\"id\":54," +
-        "\"examName\":\"4月份月考成绩\"},{\"avgScore\":0.0,\"id\":53," +
-        "\"examName\":\"3月份月考成绩\"}],\"scoreList\":[{\"avgScore\":0.0," +
-        "\"id\":56,\"examName\":\"期中考试成绩（上学期）\"},{\"avgScore\":0.0," +
-        "\"id\":55,\"examName\":\"市级联合考试成绩\"},{\"avgScore\":0.0,\"id\":54," +
-        "\"examName\":\"4月份月考成绩\"},{\"avgScore\":0.0,\"id\":53," +
-        "\"examName\":\"3月份月考成绩\"}],\"trendList\":[{\"avgScore\":0.0,\"id\":56," +
+        "\"returnValue\":{\"oneStudentList\":[{\"avgScore\":40.0,\"id\":56," +
+        "\"examName\":\"期中考试成绩（上学期）\"},{\"avgScore\":80.0,\"id\":55," +
+        "\"examName\":\"市级联合考试成绩\"},{\"avgScore\":80.0,\"id\":54," +
+        "\"examName\":\"4月份月考成绩\"},{\"avgScore\":50.0,\"id\":53," +
+        "\"examName\":\"3月份月考成绩\"}],\"scoreList\":[{\"avgScore\":40.0," +
+        "\"id\":56,\"examName\":\"期中考试成绩（上学期）\"},{\"avgScore\":90.0," +
+        "\"id\":55,\"examName\":\"市级联合考试成绩\"},{\"avgScore\":20.0,\"id\":54," +
+        "\"examName\":\"4月份月考成绩\"},{\"avgScore\":70.0,\"id\":53," +
+        "\"examName\":\"3月份月考成绩\"}],\"trendList\":[{\"avgScore\":90.0,\"id\":56," +
         "\"examName\":\"期中考试成绩（上学期）\"}," +
-        "{\"avgScore\":0.0,\"id\":55,\"examName\":\"市级联合考试成绩\"}," +
-        "{\"avgScore\":0.0,\"id\":54,\"examName\":\"4月份月考成绩\"}," +
-        "{\"avgScore\":0.0,\"id\":53,\"examName\":\"3月份月考成绩\"}]," +
+        "{\"avgScore\":50.0,\"id\":55,\"examName\":\"市级联合考试成绩\"}," +
+        "{\"avgScore\":10.0,\"id\":54,\"examName\":\"4月份月考成绩\"}," +
+        "{\"avgScore\":70.0,\"id\":53,\"examName\":\"3月份月考成绩\"}]," +
         "\"gradeUp\":0,\"classUp\":0},\"code\":\"2000\"}"
 
 class MyView(context: Context, messenger: BinaryMessenger, id: Int, params: Map<String, Any>) : PlatformView, MethodChannel.MethodCallHandler {
     private var context: Context
     private val myLineChart: LineChart
     private var mutlLineChartManager: MutlLineChartManager
-
+    private val mScoreData: MutableList<Trend> = ArrayList()
+    private val mScoreAllData: ArrayList<Trend> = ArrayList()
+    private val studentValue: ArrayList<Entry> = ArrayList()
+    private val classValue: ArrayList<Entry> = ArrayList()
+    private val gradeValue: ArrayList<Entry> = ArrayList()
+    private val xValues: ArrayList<String> = ArrayList()
     init {
         var myNativeView = LineChart(context)
         mutlLineChartManager = MutlLineChartManager()
         val layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        layoutParams.height =300
+        val var2 = context.resources.displayMetrics
+        val var3 = ((300.toFloat() * var2.density).toDouble() + 0.5).toInt()
+        layoutParams.height =var3/*(context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.height-100*/
+        layoutParams.width =(context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.width
         myNativeView.layoutParams = layoutParams
 
         this.myLineChart = myNativeView
@@ -56,6 +65,7 @@ class MyView(context: Context, messenger: BinaryMessenger, id: Int, params: Map<
         val methodChannel = MethodChannel(messenger, "plugins.nightfarmer.top/myview_$id")
         this.context = context
         methodChannel.setMethodCallHandler(this)
+//        loadStudentScoreDetailSuccess(Gson().fromJson(dataTemp, XueQingGrade_StudentScoreDetailBean::class.java))
     }
 
     override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
@@ -65,7 +75,7 @@ class MyView(context: Context, messenger: BinaryMessenger, id: Int, params: Map<
             loadStudentScoreDetailSuccess(Gson().fromJson(dataTemp, XueQingGrade_StudentScoreDetailBean::class.java))
             result.success(null)
         } else if ("updatePoint" == methodCall.method) {
-            val indexPostion = methodCall.arguments as Int
+            val indexPostion = Random().nextInt(studentValue.size)
             updatePoint(indexPostion)
             result.success(null)
         }
@@ -80,12 +90,7 @@ class MyView(context: Context, messenger: BinaryMessenger, id: Int, params: Map<
     }
 
     var higherScore: Float = 0f
-    private val mScoreData: MutableList<Trend> = ArrayList()
-    private val mScoreAllData: ArrayList<Trend> = ArrayList()
-    private var studentValue: ArrayList<Entry> = ArrayList()
-    private var classValue: ArrayList<Entry> = ArrayList()
-    private var gradeValue: ArrayList<Entry> = ArrayList()
-    private var xValues: ArrayList<String> = ArrayList()
+
     fun loadStudentScoreDetailSuccess(fromJson: XueQingGrade_StudentScoreDetailBean?) {
         val returnValue = fromJson?.returnValue
         returnValue?.maxScore?.let { higherScore = it }
@@ -97,9 +102,7 @@ class MyView(context: Context, messenger: BinaryMessenger, id: Int, params: Map<
 
             mScoreAllData.addAll(returnValue.oneStudentList)
 
-
             mScoreData.addAll(mScoreAllData)
-
 
         }
         if (xValues.size == 0) {
